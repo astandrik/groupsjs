@@ -19,21 +19,27 @@ var textInterpretations = fs.readFileSync('/home/nastia/workspace/inerpretationd
                if (elem[0] !== '') interpretations[parseInt(elem[0])] = elem.slice(1,-1).map(function(item) {return parseInt(item);});
             });
 
-
 function countHorizontal(group) {
+  var horizontal = 0;
+    group.forEach(function(permNumber) {
+      var permutation = interpretations[permNumber];
+      if(permutation[2] == 4) horizontal += 1;
+      if(permutation[3] == 3) horizontal += 1;
+      if(permutation[4] == 6) horizontal += 1;
+      if(permutation[5] == 5) horizontal += 1;
+      if(permutation[2] == 6) horizontal += 1;
+      if(permutation[5] == 3) horizontal += 1;
+      if(permutation[3] == 5) horizontal += 1;
+      if(permutation[4] == 4) horizontal += 1;
+    });
+  return horizontal;
+}
+
+
+function countHorizontalForAll(groups) {
     var horizontal = 0;
-    for (var groupNumber in group) {
-        group[groupNumber].forEach(function(permNumber) {
-          var permutation = interpretations[permNumber];
-          if(permutation[2] == 4) horizontal += 1;
-          if(permutation[3] == 3) horizontal += 1;
-          if(permutation[4] == 6) horizontal += 1;
-          if(permutation[5] == 5) horizontal += 1;
-          if(permutation[2] == 6) horizontal += 1;
-          if(permutation[5] == 3) horizontal += 1;
-          if(permutation[3] == 5) horizontal += 1;
-          if(permutation[4] == 4) horizontal += 1;
-        });
+    for (var groupNumber in groups) {
+        horizontal += countHorizontal(group[groupNumber]);
     }
     return horizontal;
 }
@@ -72,8 +78,11 @@ function filterGroups(restrictedVertices) {
     return newGroups;
 }
 
-var firstGroup = filterGroups([3]);
-var secondGroup = filterGroups([1]);
-console.log(Object.keys(interpretations));
-console.log(countHorizontal(firstGroup));
-console.log(countHorizontal(secondGroup));
+var firstGroups = filterGroups([3]);
+var secondGroups = filterGroups([1]);
+for (var e in firstGroups) {
+  console.log(countHorizontal(firstGroups[e]));
+}
+for (var e in secondGroups) {
+  console.log(countHorizontal(secondGroups[e]));
+}
