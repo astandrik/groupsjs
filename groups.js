@@ -24,22 +24,39 @@ function isPermInGroup(group, perm) {
 
 function makeClosure(initGroup) {
   var flag = true;
-  var newGroup = [];
-  for(var i = 0; i < initGroup.length; i++) {
-    for(var j = 0; j < initGroup.length; j++) {
-      var newPermRight = multiPerm(initGroup[i], initGroup[j]);
-      var newPermLeft = multiPerm(initGroup[j], initGroup[i]);
-      if(!isPermInGroup(initGroup, newPermRight)) {
-        initGroup.push(newPermRight);
+  var newGroup = initGroup.slice();
+  for(var i = 0; i < newGroup.length; i++) {
+    for(var j = 0; j < newGroup.length; j++) {
+      var newPermRight = multiPerm(newGroup[i], newGroup[j]);
+      var newPermLeft = multiPerm(newGroup[j], newGroup[i]);
+      if(!isPermInGroup(newGroup, newPermRight)) {
+        newGroup.push(newPermRight);
         i = 0;
         j = 0;
       }
-      if(!isPermInGroup(initGroup, newPermLeft)) {
-        initGroup.push(newPermLeft);
+      if(!isPermInGroup(newGroup, newPermLeft)) {
+        newGroup.push(newPermLeft);
         i = 0;
         j = 0;
       }
     }
   }
-  return initGroup;
+  return newGroup;
+}
+
+function factorial(n) {
+  return n === 0 ? 1 : n * factorial(n-1);
+}
+
+
+function groupsOnVertices(n) {
+  var sum = 0;
+  for(var i = 1; i <= n; i++) {
+    sum +=  factorial(n) / (factorial(n-i) * factorial(i));
+  }
+  return sum;
+}
+
+function getGroupsIn(startVert, endVert) {
+  var i =
 }
