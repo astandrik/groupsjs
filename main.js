@@ -111,24 +111,31 @@ function countVerticalForAll(groups) {
 }
 
 function countVerticalAvg(chains) {
-    var vertical = 0;
+    var min = 99999999999;
+    var max = 0;
     chains.forEach(function(chain) {
-      vertical += chain.reduce(function(sum,curr){
+      var vertical = chain.reduce(function(sum, curr){
         return sum + countVertical(groups[curr]);
       },0);
+      var sum = vertical;
+      if(sum > max) max = sum;
+      if(sum < min) min = sum;
     });
-    console.log(vertical);
-    return vertical / chains.length;
+    return {min: min, max: max};
 }
 
 function countHorizontalAvg(chains) {
-    var horizontal = 0;
+    var min = 99999999999;
+    var max = 0;
     chains.forEach(function(chain) {
-      horizontal += chain.reduce(function(sum,curr){
+      var horizontal = chain.reduce(function(sum, curr){
         return sum + countHorizontal(groups[curr]);
       },0);
+      var sum = horizontal;
+      if(sum > max) max = sum;
+      if(sum < min) min = sum;
     });
-    return horizontal / chains.length;
+    return {min: min, max: max};
 }
 
 
@@ -183,5 +190,7 @@ var secondChains = filterConnections([3,4]);
 var chainIndexes1 = {vert: countVerticalAvg(firstChains), horiz: countHorizontalAvg(firstChains)};
 var chainIndexes2 = {vert: countVerticalAvg(secondChains), horiz: countHorizontalAvg(secondChains)};
 
-console.log(chainIndexes1);
-console.log(chainIndexes2);
+console.log(chainIndexes1.vert.min,'----',chainIndexes1.vert.max);
+console.log(chainIndexes1.horiz.min,'----',chainIndexes1.horiz.max);
+console.log(chainIndexes2.vert.min,'----',chainIndexes2.vert.max);
+console.log(chainIndexes2.horiz.min,'----',chainIndexes2.horiz.max);
