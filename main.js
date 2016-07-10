@@ -110,7 +110,7 @@ function countVerticalForAll(groups) {
     return vertical;
 }
 
-function countVerticalAvg(chains) {
+function countVerticalSpread(chains) {
     var min = 99999999999;
     var max = 0;
     chains.forEach(function(chain) {
@@ -124,7 +124,7 @@ function countVerticalAvg(chains) {
     return {min: min, max: max};
 }
 
-function countHorizontalAvg(chains) {
+function countHorizontalSpread(chains) {
     var min = 99999999999;
     var max = 0;
     chains.forEach(function(chain) {
@@ -138,6 +138,27 @@ function countHorizontalAvg(chains) {
     return {min: min, max: max};
 }
 
+function countHorizontalAvg(chains) {
+    var sum = 0;
+    chains.forEach(function(chain) {
+      var horizontal = chain.reduce(function(sum, curr){
+        return sum + countHorizontal(groups[curr]);
+      },0);
+      sum += horizontal;
+    });
+    return Math.floor(sum / chains.length);
+}
+
+function countVerticalAvg(chains) {
+    var sum = 0;
+    chains.forEach(function(chain) {
+      var vertical = chain.reduce(function(sum, curr){
+        return sum + countVertical(groups[curr]);
+      },0);
+      sum += vertical;
+    });
+    return Math.floor(sum / chains.length);
+}
 
 function filterGroups(restrictedVertices) {
     var newGroups = {};
@@ -165,32 +186,88 @@ function filterConnections(connection) {
     groups[e].forEach(function(gr) {
          if((interpretations[gr][connection[0] - 1] == connection[1])
           || (interpretations[gr][connection[1] - 1] == connection[0])) {
-            restrictedGroups[gr] = 1;
+            restrictedGroups[e] = 1;
           }
     });
   }
 
   chains.forEach(function(chain) {
     var flag = true;
+    var newChain = [];
     for(var i = 0; i < chain.length; i++) {
       if(restrictedGroups[chain[i]] == 1) {
-        flag = false;
         break;
+      } else {
+        newChain.push(chain[i]);
       }
     }
-    if(flag) {
-      newChains.push(chain);
+    if(newChain.length > 1) {
+      newChains.push(newChain);
     }
   });
   return newChains;
 }
 
+function intBetween(min,max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+function selectRandomChains(percentile, chains) {
+  var selected = {};
+  var newChains = [];
+  var length = chains.length;
+  while((newChains.length / length) < percentile) {
+    var num = intBetween(0, chains.length - 1);
+    while(selected[num]) num = intBetween(0, chains.length - 1);
+    newChains.push(chains[num]);
+    selected[num] = 1;
+  }
+  return newChains;
+}
+
 var firstChains = filterConnections([1,2]);
 var secondChains = filterConnections([3,4]);
-var chainIndexes1 = {vert: countVerticalAvg(firstChains), horiz: countHorizontalAvg(firstChains)};
-var chainIndexes2 = {vert: countVerticalAvg(secondChains), horiz: countHorizontalAvg(secondChains)};
 
-console.log(chainIndexes1.vert.min,'----',chainIndexes1.vert.max);
-console.log(chainIndexes1.horiz.min,'----',chainIndexes1.horiz.max);
-console.log(chainIndexes2.vert.min,'----',chainIndexes2.vert.max);
-console.log(chainIndexes2.horiz.min,'----',chainIndexes2.horiz.max);
+var chI1 =  {overallVert: countVerticalAvg(firstChains),
+  overallHor: countHorizontalAvg(firstChains),
+  verticalSpread: countVerticalSpread(firstChains),
+  horizontalSpread: countHorizontalSpread(firstChains)};
+
+  var chI2 =  {overallVert: countVerticalAvg(secondChains),
+    overallHor: countHorizontalAvg(secondChains),
+    verticalSpread: countVerticalSpread(secondChains),
+    horizontalSpread: countHorizontalSpread(secondChains)};
+
+console.log("Всего траекторий: " + chains.length);
+
+console.log("Общее среднее по вертикали для \"без нижнего\": " + chI1.overallVert);
+console.log("Общее среднее по горизонтали для \"без нижего\": " + chI1.overallHor);
+console.log("Общий разброс для \"без нижнего\" по вертикали: " + chI1.verticalSpread.min,'----',chI1.verticalSpread.max);
+console.log("Общий разброс для \"без нижнего\" по горизонтали: " + chI1.horizontalSpread.min,'----',chI1.horizontalSpread.max);
+
+console.log("Общее среднее по вертикали для \"без верхнего\": " + chI2.overallVert);
+console.log("Общее среднее по горизонтали для \"без верхнего\": " + chI2.overallHor);
+console.log("Общий разброс для \"без верхнего\" по вертикали: " + chI2.verticalSpread.min,'----',chI2.verticalSpread.max);
+console.log("Общий разброс для \"без верхнего\" по горизонтали: " + chI2.horizontalSpread.min,'----',chI2.horizontalSpread.max);
+
+
+for(var i = 0; i < 5; i++) {
+  var percentile = 1/10;
+  var chains1 = selectRandomChains(percentile, firstChains);
+  var chains2 = selectRandomChains(percentile, secondChains);
+  console.log("\nИтерация номер " + (i+1) + "\n ----------------------\n");
+  console.log("Множество траекторий для первого дерева: " + chains1.length);
+  console.log("Множество траекторий для второго дерева: " + chains2.length);
+  var chainIndexes1 = {vert: countVerticalSpread(chains1), horiz: countHorizontalSpread(chains1)};
+  var chainIndexes2 = {vert: countVerticalSpread(chains2), horiz: countHorizontalSpread(chains2)};
+  var chainIndAvg11 = countVerticalAvg(chains1);
+  var chainIndAvg12 = countHorizontalAvg(chains1);
+  var chainIndAvg21 = countVerticalAvg(chains2);
+  var chainIndAvg22 = countHorizontalAvg(chains2);
+  console.log("Разброс для \"без нижнего\" по вертикали: " + chainIndexes1.vert.min,'----',chainIndexes1.vert.max);
+  console.log("Разброс для \"без нижнего\" по горизонтали: " + chainIndexes1.horiz.min,'----',chainIndexes1.horiz.max);
+  console.log("Разброс для \"без верхнего\" по вертикали: " + chainIndexes2.vert.min,'----',chainIndexes2.vert.max);
+  console.log("Разброс для \"без верхнего\" по горизонтали: " + chainIndexes2.horiz.min,'----',chainIndexes2.horiz.max);
+  console.log("Среднее по вертикали для \"без нижнего\": " + chainIndAvg11 + "\nСреднее по горизонтали для \"без нижнего\": " + chainIndAvg12);
+  console.log("Среднее по вертикали для \"без верххнего\": " + chainIndAvg21 +"\nСреднее по горизонтали для \"без верхнего\": " + chainIndAvg22);
+}
