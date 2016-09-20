@@ -1,7 +1,7 @@
 fs = require('fs');
 
 var groups = {};
-var textGroups = fs.readFileSync('/home/nastia/workspace/Europe/results_new_groups_SIX.txt', 'utf8')
+var textGroups = fs.readFileSync('../groupsc/results_new_groups_SIX.txt', 'utf8')
              .split('\n')
              .map(function(item) {
                if(item.length !== 0) {
@@ -12,7 +12,7 @@ var textGroups = fs.readFileSync('/home/nastia/workspace/Europe/results_new_grou
 
 
 var interpretations = {};
-var textInterpretations = fs.readFileSync('/home/nastia/workspace/Europe/interpretations_SIX', 'utf8')
+var textInterpretations = fs.readFileSync('../groupsc/memcount/interpretations_SIX', 'utf8')
              .split('\n')
              .map(function(item) {
                var elem = item.split(' ');
@@ -20,7 +20,7 @@ var textInterpretations = fs.readFileSync('/home/nastia/workspace/Europe/interpr
             });
 
 var chains = [];
-var textChains = fs.readFileSync('/home/nastia/workspace/Europe/results_new_SIX.txt', 'utf8')
+var textChains = fs.readFileSync('../groupsc/results_new_SIX.txt', 'utf8')
                   .split('\n')
                   .map(function(item) {
                     var strVals = item.split(',');
@@ -227,6 +227,7 @@ function selectRandomChains(percentile, chains) {
 
 var firstChains = filterConnections([1,2]);
 var secondChains = filterConnections([3,4]);
+var chinaChains = chains;
 
 var chI1 =  {overallVert: countVerticalAvg(firstChains),
   overallHor: countHorizontalAvg(firstChains),
@@ -237,6 +238,11 @@ var chI1 =  {overallVert: countVerticalAvg(firstChains),
     overallHor: countHorizontalAvg(secondChains),
     verticalSpread: countVerticalSpread(secondChains),
     horizontalSpread: countHorizontalSpread(secondChains)};
+
+    var chI3 =  {overallVert: countVerticalAvg(chinaChains),
+      overallHor: countHorizontalAvg(chinaChains),
+      verticalSpread: countVerticalSpread(chinaChains),
+      horizontalSpread: countHorizontalSpread(chinaChains)};
 
 console.log("Всего траекторий: " + chains.length);
 
@@ -250,24 +256,36 @@ console.log("Общее среднее по горизонтали для \"бе
 console.log("Общий разброс для \"без верхнего\" по вертикали: " + chI2.verticalSpread.min,'----',chI2.verticalSpread.max);
 console.log("Общий разброс для \"без верхнего\" по горизонтали: " + chI2.horizontalSpread.min,'----',chI2.horizontalSpread.max);
 
+console.log("Общее среднее по вертикали для \"все на месте\": " + chI3.overallVert);
+console.log("Общее среднее по горизонтали для \"все на месте\": " + chI3.overallHor);
+console.log("Общий разброс для \"все на месте\" по вертикали: " + chI3.verticalSpread.min,'----',chI3.verticalSpread.max);
+console.log("Общий разброс для \"все на месте\" по горизонтали: " + chI3.horizontalSpread.min,'----',chI3.horizontalSpread.max);
+
 
 for(var i = 0; i < 5; i++) {
   var percentile = 1/10;
   var chains1 = selectRandomChains(percentile, firstChains);
   var chains2 = selectRandomChains(percentile, secondChains);
+  var chains3 = selectRandomChains(percentile, chinaChains);
   console.log("\nИтерация номер " + (i+1) + "\n ----------------------\n");
   console.log("Множество траекторий для первого дерева: " + chains1.length);
   console.log("Множество траекторий для второго дерева: " + chains2.length);
   var chainIndexes1 = {vert: countVerticalSpread(chains1), horiz: countHorizontalSpread(chains1)};
   var chainIndexes2 = {vert: countVerticalSpread(chains2), horiz: countHorizontalSpread(chains2)};
+  var chainIndexes3 = {vert: countVerticalSpread(chains2), horiz: countHorizontalSpread(chains3)};
   var chainIndAvg11 = countVerticalAvg(chains1);
   var chainIndAvg12 = countHorizontalAvg(chains1);
   var chainIndAvg21 = countVerticalAvg(chains2);
   var chainIndAvg22 = countHorizontalAvg(chains2);
+  var chainIndAvg31 = countVerticalAvg(chains3);
+  var chainIndAvg32 = countHorizontalAvg(chains3);
   console.log("Разброс для \"без нижнего\" по вертикали: " + chainIndexes1.vert.min,'----',chainIndexes1.vert.max);
   console.log("Разброс для \"без нижнего\" по горизонтали: " + chainIndexes1.horiz.min,'----',chainIndexes1.horiz.max);
   console.log("Разброс для \"без верхнего\" по вертикали: " + chainIndexes2.vert.min,'----',chainIndexes2.vert.max);
   console.log("Разброс для \"без верхнего\" по горизонтали: " + chainIndexes2.horiz.min,'----',chainIndexes2.horiz.max);
+  console.log("Разброс для \"все на месте\" по вертикали: " + chainIndexes3.vert.min,'----',chainIndexes3.vert.max);
+  console.log("Разброс для \"все на месте\" по горизонтали: " + chainIndexes3.horiz.min,'----',chainIndexes3.horiz.max);
   console.log("Среднее по вертикали для \"без нижнего\": " + chainIndAvg11 + "\nСреднее по горизонтали для \"без нижнего\": " + chainIndAvg12);
-  console.log("Среднее по вертикали для \"без верххнего\": " + chainIndAvg21 +"\nСреднее по горизонтали для \"без верхнего\": " + chainIndAvg22);
+  console.log("Среднее по вертикали для \"без верхнего\": " + chainIndAvg21 +"\nСреднее по горизонтали для \"без верхнего\": " + chainIndAvg22);
+  console.log("Среднее по вертикали для \"все на месте\": " + chainIndAvg31 +"\nСреднее по горизонтали для \"все на месте\": " + chainIndAvg32);
 }
