@@ -35,26 +35,26 @@ function countHorizontal(group) {
   var horizontal = 0;
     group.forEach(function(permNumber) {
       var permutation = interpretations[permNumber];
-      if(permutation[2] == 4) horizontal += 4;
-      if(permutation[3] == 3) horizontal += 4;
-      if(permutation[4] == 6) horizontal += 8;
-      if(permutation[5] == 5) horizontal += 8;
+      if(permutation[2] == 4) horizontal += 1;
+      if(permutation[3] == 3) horizontal += 1;
+      if(permutation[4] == 6) horizontal += 1;
+      if(permutation[5] == 5) horizontal += 1;
 
-      if(permutation[2] == 6) horizontal += 6;
-      if(permutation[5] == 3) horizontal += 6;
-      if(permutation[3] == 5) horizontal += 6;
-      if(permutation[4] == 4) horizontal += 6;
+      if(permutation[2] == 6) horizontal += 1;
+      if(permutation[5] == 3) horizontal += 1;
+      if(permutation[3] == 5) horizontal += 1;
+      if(permutation[4] == 4) horizontal += 1;
 
       if(permutation[0] == 2) horizontal += 1;
       if(permutation[1] == 1) horizontal += 1;
-      if(permutation[0] == 4) horizontal += 2.5;
-      if(permutation[3] == 1) horizontal += 2.5;
-      if(permutation[1] == 3) horizontal += 2.5;
-      if(permutation[2] == 2) horizontal += 2.5;
-      if(permutation[0] == 6) horizontal += 4.5;
-      if(permutation[5] == 1) horizontal += 4.5;
-      if(permutation[1] == 5) horizontal += 4.5;
-      if(permutation[4] == 2) horizontal += 4.5;
+      if(permutation[0] == 4) horizontal += 1;
+      if(permutation[3] == 1) horizontal += 1;
+      if(permutation[1] == 3) horizontal += 1;
+      if(permutation[2] == 2) horizontal += 1;
+      if(permutation[0] == 6) horizontal += 1;
+      if(permutation[5] == 1) horizontal += 1;
+      if(permutation[1] == 5) horizontal += 1;
+      if(permutation[4] == 2) horizontal += 1;
     });
   return horizontal;
 }
@@ -63,50 +63,54 @@ function countVertical(group) {
   var vertical = 0;
     group.forEach(function(permNumber) {
       var permutation = interpretations[permNumber];
-      if(permutation[2] == 5) vertical += 6;
-      if(permutation[4] == 3) vertical += 6;
-      if(permutation[3] == 6) vertical += 6;
-      if(permutation[5] == 4) vertical += 6;
+      if(permutation[2] == 5) vertical += 1;
+      if(permutation[4] == 3) vertical += 1;
+      if(permutation[3] == 6) vertical += 1;
+      if(permutation[5] == 4) vertical += 1;
 
-      if(permutation[2] == 6) vertical += 6;
-      if(permutation[5] == 3) vertical += 6;
-      if(permutation[3] == 5) vertical += 6;
-      if(permutation[4] == 4) vertical += 6;
+      if(permutation[2] == 6) vertical += 0.5;
+      if(permutation[5] == 3) vertical += 0.5;
+      if(permutation[3] == 5) vertical += 0.5;
+      if(permutation[4] == 4) vertical += 0.5;
 
-      if(permutation[0] == 3) vertical += 2.5;
-      if(permutation[2] == 1) vertical += 2.5;
-      if(permutation[1] == 4) vertical += 2.5;
-      if(permutation[3] == 2) vertical += 2.5;
-      if(permutation[3] == 1) vertical += 2.5;
-      if(permutation[0] == 4) vertical += 2.5;
-      if(permutation[1] == 3) vertical += 2.5;
-      if(permutation[2] == 2) vertical += 2.5;
-      if(permutation[0] == 6) vertical += 4.5;
-      if(permutation[5] == 1) vertical += 4.5;
-      if(permutation[1] == 5) vertical += 4.5;
-      if(permutation[4] == 2) vertical += 4.5;
-      if(permutation[0] == 5) vertical += 4.5;
-      if(permutation[4] == 1) vertical += 4.5;
-      if(permutation[1] == 6) vertical += 4.5;
-      if(permutation[5] == 2) vertical += 4.5;
+      if(permutation[0] == 3) vertical += 1;
+      if(permutation[2] == 1) vertical += 1;
+      if(permutation[1] == 4) vertical += 1;
+      if(permutation[3] == 2) vertical += 1;
+      if(permutation[3] == 1) vertical += 0.5;
+      if(permutation[0] == 4) vertical += 0.5;
+      if(permutation[1] == 3) vertical += 0.5;
+      if(permutation[2] == 2) vertical += 0.5;
+      if(permutation[0] == 6) vertical += 0.5;
+      if(permutation[5] == 1) vertical += 0.5;
+      if(permutation[1] == 5) vertical += 0.5;
+      if(permutation[4] == 2) vertical += 0.5;
+      if(permutation[0] == 5) vertical += 1;
+      if(permutation[4] == 1) vertical += 1;
+      if(permutation[1] == 6) vertical += 1;
+      if(permutation[5] == 2) vertical += 1;
     });
   return vertical;
 }
 
 
-function countHorizontalForAll(groups) {
+function countHorizontalForAll(chains) {
     var horizontal = 0;
-    for (var groupNumber in groups) {
-        horizontal += countHorizontal(groups[groupNumber]);
-    }
+    chains.forEach(function(chain) {
+      horizontal += chain.reduce(function(sum, curr){
+        return sum + countHorizontal(groups[curr]);
+      },0);
+    });
     return horizontal;
 }
 
-function countVerticalForAll(groups) {
+function countVerticalForAll(chains) {
     var vertical = 0;
-    for (var groupNumber in groups) {
-        vertical += countVertical(groups[groupNumber]);
-    }
+    chains.forEach(function(chain) {
+      vertical += chain.reduce(function(sum, curr){
+        return sum + countVertical(groups[curr]);
+      },0);
+    });
     return vertical;
 }
 
@@ -232,32 +236,52 @@ var chinaChains = chains;
 var chI1 =  {overallVert: countVerticalAvg(firstChains),
   overallHor: countHorizontalAvg(firstChains),
   verticalSpread: countVerticalSpread(firstChains),
-  horizontalSpread: countHorizontalSpread(firstChains)};
+  horizontalSpread: countHorizontalSpread(firstChains),
+  horizontalAll: countHorizontalForAll(firstChains),
+  verticalAll: countVerticalForAll(firstChains)};
 
   var chI2 =  {overallVert: countVerticalAvg(secondChains),
     overallHor: countHorizontalAvg(secondChains),
     verticalSpread: countVerticalSpread(secondChains),
-    horizontalSpread: countHorizontalSpread(secondChains)};
+    horizontalSpread: countHorizontalSpread(secondChains),
+    horizontalAll: countHorizontalForAll(secondChains),
+    verticalAll: countVerticalForAll(secondChains)};
 
     var chI3 =  {overallVert: countVerticalAvg(chinaChains),
       overallHor: countHorizontalAvg(chinaChains),
       verticalSpread: countVerticalSpread(chinaChains),
-      horizontalSpread: countHorizontalSpread(chinaChains)};
+      horizontalSpread: countHorizontalSpread(chinaChains),
+      horizontalAll: countHorizontalForAll(chinaChains),
+      verticalAll: countVerticalForAll(chinaChains)};
 
 console.log("Всего траекторий: " + chains.length);
 
 console.log("Общее среднее по вертикали для \"без нижнего\": " + chI1.overallVert);
 console.log("Общее среднее по горизонтали для \"без нижего\": " + chI1.overallHor);
+console.log("Общее по вертикали для \"без нижего\": " + chI1.verticalAll);
+console.log("Общее по горизонтали для \"без нижего\": " + chI1.horizontalAll);
+console.log("Уважение \"без нижего\": " + chI1.verticalAll / (chI1.horizontalAll + chI1.verticalAll));
+console.log("Взаимопомощь \"без нижего\": " + chI1.horizontalAll / (chI1.horizontalAll + chI1.verticalAll));
 console.log("Общий разброс для \"без нижнего\" по вертикали: " + chI1.verticalSpread.min,'----',chI1.verticalSpread.max);
 console.log("Общий разброс для \"без нижнего\" по горизонтали: " + chI1.horizontalSpread.min,'----',chI1.horizontalSpread.max);
 
 console.log("Общее среднее по вертикали для \"без верхнего\": " + chI2.overallVert);
 console.log("Общее среднее по горизонтали для \"без верхнего\": " + chI2.overallHor);
+console.log("Общее по вертикали для \"без верхнего\": " + chI2.verticalAll);
+console.log("Общее по горизонтали для \"без верхнего\": " + chI2.horizontalAll);
+console.log("Уважение \"без верхнего\": " + chI2.verticalAll / (chI2.horizontalAll + chI2.verticalAll));
+console.log("Взаимопомощь \"без верхнего\": " + chI2.horizontalAll / (chI2.horizontalAll + chI2.verticalAll));
 console.log("Общий разброс для \"без верхнего\" по вертикали: " + chI2.verticalSpread.min,'----',chI2.verticalSpread.max);
 console.log("Общий разброс для \"без верхнего\" по горизонтали: " + chI2.horizontalSpread.min,'----',chI2.horizontalSpread.max);
 
+console.log("Разница взаимопомощи \"без нижнего\" - \"без верхнего\": " + (- chI2.horizontalAll / (chI2.horizontalAll + chI2.verticalAll) + chI1.horizontalAll / (chI1.horizontalAll + chI1.verticalAll)));
+console.log("Разница уважения \"без нижнего\" - \"без верхнего\": " + (- chI2.verticalAll / (chI2.horizontalAll + chI2.verticalAll) + chI1.verticalAll / (chI1.horizontalAll + chI1.verticalAll)));
+
 console.log("Общее среднее по вертикали для \"все на месте\": " + chI3.overallVert);
 console.log("Общее среднее по горизонтали для \"все на месте\": " + chI3.overallHor);
+console.log("Общее по вертикали для \"все на месте\": " + chI3.verticalAll);
+console.log("Общее по горизонтали для \"все на месте\": " + chI3.horizontalAll);
+console.log("Коэффициент \"все на месте\": " + chI3.verticalAll / (chI3.horizontalAll + chI3.verticalAll));
 console.log("Общий разброс для \"все на месте\" по вертикали: " + chI3.verticalSpread.min,'----',chI3.verticalSpread.max);
 console.log("Общий разброс для \"все на месте\" по горизонтали: " + chI3.horizontalSpread.min,'----',chI3.horizontalSpread.max);
 
